@@ -121,7 +121,7 @@
 	\begin{center}
 		\begin{tikzpicture}[overlay]
 			\foreach \i in {-3, -1, 1, 3} {
-				\draw[line width = 1.5pt] (-.5\linewidth, .15*\i) -- (.5\linewidth, .15*\i);
+				\draw[line width = 1.5pt] (-.5\linewidth, .165*\i) -- (.5\linewidth, .165*\i);
 			}
 			\node[fill = white, text = black, draw = white] at (0, 0) {\huge\bfseries\capitals\thetitle};
 		\end{tikzpicture}
@@ -131,11 +131,12 @@
 	Course: \thecourse \\
 	\rule{\linewidth}{1.5pt}
 }
-
+\renewcommand{\headrule}{}
 
 %%% computer science
 \lstset{
 	language = Python,
+	tabsize = 4,
 	basicstyle = \consolasfont,
 	breaklines = true,
 	frame = leftline,
@@ -172,6 +173,8 @@
 \newcommand{\lcm}[1]{\text{lcm}(#1)}
 \newcommand{\bb}[1]{\mathbb{#1}}
 \newcommand{\ri}[1]{\mathcal{#1}}
+\newcommand{\der}[1]{\, \text d#1}
+\newcommand{\derfrac}[2]{\frac{\der{#1}}{\der{#2}}}
 
 
 %%% group theory
@@ -187,6 +190,13 @@
 {
 	\seq_set_split:Nnn \l_alec_cycle_seq { , } { #2 }
 	\seq_use:Nn \l_alec_cycle_seq { #1 }
+}
+\ExplSyntaxOff
+
+\ExplSyntaxOn
+\NewDocumentCommand{\seplist}{ O{\ } m} {
+  \seq_set_from_clist:Nn \l_tmpa_seq {#2}
+  \seq_use:Nn \l_tmpa_seq { #1 }
 }
 \ExplSyntaxOff
 
@@ -206,6 +216,8 @@
 }
 
 \newcommand{\class}[1]{\left\langle #1 \right\rangle}
+\newcommand{\aut}[1]{\text{Aut}(#1)}
+\newcommand{\inn}[1]{\text{Inn}(#1)}
 
 
 %%% riemann integration
