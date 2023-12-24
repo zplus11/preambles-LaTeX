@@ -3,21 +3,21 @@
 
 
 %%% packages
-\documentclass[11pt, a4paper]{article}
+\documentclass[11pt, a4paper, twoside]{article}
 
-\usepackage[margin = 2cm]{geometry}
-\usepackage{fontspec}
-\newfontfamily{\capitals}{Perpetua Titling MT}
-\newfontfamily{\garamond}{Garamond}
-\newfontfamily{\arial}{Arial}
+\usepackage{geometry}
+\geometry{
+	margin = 2cm
+}
 \usepackage{tikz}
+	\usetikzlibrary{positioning}
+\usepackage{circuitikz}
 \usepackage{pgfplots}
-\usepackage{xparse}
-\usepackage{setspace}
+\usepackage{lipsum}
+\usepackage{fontspec}
 
 \usepackage{amsmath}
 \usepackage{amssymb}
-\usepackage{enumerate}
 \usepackage{enumitem}
 \usepackage{graphicx}
 \usepackage{fancyhdr}
@@ -25,38 +25,52 @@
 \usepackage{listings}
 \usepackage{multicol}
 \usepackage{caption}
-\usepackage{listings}
 \usepackage{xcolor}
 \usepackage{lstautogobble}
+\usepackage{booktabs}
+\usepackage{pdfpages}
+\usepackage{fourier-orns}
+\usepackage{titling}
+\usepackage{lettrine}
 
 
 %%% configuration
 \setlength{\parindent}{0pt}
 \captionsetup[figure]{width = .65\linewidth}
-\newfontfamily{\consolasfont}{Consolas}
-\newcommand{\insertcode}[1]{{\consolasfont #1}}
 
 \renewcommand{\thefootnote}{\fnsymbol{footnote}}
 \hypersetup{
 	pdfborder={0 0 0},
 }
 
-\fancypagestyle{customheader}{
-	\fancyhf{}
-	\lhead{{\small\thename \ (\theroll)}}
-	\chead{{\large\thetitle}}
-	\rhead{{\small\thecourse}}
-	\cfoot{\thepage}
-	\renewcommand{\headrulewidth}{1pt}
+\newfontface{\initials}{EB Garamond Initials}
+\newfontfamily{\capitals}{Perpetua Titling MT}
+\newfontfamily{\garamond}{Garamond}
+
+\newcommand{\docfont}{\ttfamily}
+
+\fancypagestyle{mainstyle}{
+	\fancyhead[C]{}
+	\fancyhead[LO, RE]{\docfont\thetitle}
+	\fancyhead[LE, RO]{\docfont\thename}
+	\fancyfoot[RO]{\docfont\thepage\ \floweroneright}
+	\fancyfoot[LE]{\floweroneleft\ \docfont\thepage}
+	\fancyfoot[LO, RE]{\docfont\thecourse}
+	\fancyfoot[C]{}
+	\renewcommand{\headrule}{}
+	\renewcommand{\footrule}{}
+}
+\fancypagestyle{titlepage}{
+	\fancyhead[L, C, R]{}
+	\fancyfoot[RO]{\docfont\thepage\ \floweroneright}
+	\fancyfoot[LE]{\floweroneleft\ \docfont\thepage}
+	\fancyfoot[LO, RE]{\docfont\thecourse}
+	\fancyfoot[C]{}
+	\renewcommand{\headrule}{}
+	\renewcommand{\footrule}{}
 }
 
-\fancypagestyle{pagenumberonly}{
-	\fancyhf{}
-	\cfoot{\thepage}
-	\renewcommand{\headrulewidth}{0pt}
-}
-
-\pagestyle{customheader}
+\pagestyle{mainstyle}
 
 
 %%% assignment commands
@@ -71,57 +85,61 @@
 \newcommand{\program}[1]{\newcommand{\theprogram}{#1}}
 \newcommand{\course}[1]{\newcommand{\thecourse}{#1}}
 \renewcommand{\date}[1]{\newcommand{\thedate}{#1}}
-\renewcommand{\title}[1]{\newcommand{\thetitle}{#1}}
+\renewcommand{\title}[2]{
+	\newcommand{\thetitle}{#1#2}
+	\newcommand{\thefancytitle}{
+		{\fontsize{60}{68}\selectfont\initials#1}{\huge\scshape#2}
+	}
+}
 
 \newcommand{\myheader}[1]{
-	\noindent\vspace{-.25\baselineskip}
+	\noindent\bigskip
 	\begin{center}
-		{\bfseries\Large #1}
+		{\Large\docfont\bfseries #1}
 	\end{center}
 	\vspace{-.25\baselineskip}
 }
 \NewDocumentCommand{\myquestion}{ o m }{
 	\IfNoValueTF{#1}{
 		\stepcounter{myquestion}
-		\par \vspace{\baselineskip}
-		{\bfseries Question \themyquestion:} { #2} \par
+		\par\vspace{\baselineskip}
+		{\docfont\bfseries Question \themyquestion:} #2 \par
 	}{%
 		\stepcounter{myquestion}
 		\setcounter{myquestion}{#1}
-		\par \vspace{\baselineskip}
-		{\bfseries Question #1:} { #2} \par
+		\par\vspace{\baselineskip}
+		{\docfont\bfseries Question #1:} #2 \par
 	}
 }
 \newcommand{\mypart}[1]{
 	\stepcounter{mypart}
-	\par\vspace{.5\baselineskip} {\bfseries Part (\roman{mypart}):} {#1} \par
+	\par\vspace{.5\baselineskip}
+	{\docfont\bfseries Part (\roman{mypart}):} {#1} \par
 }
-\newcommand{\mysol}{\par {\itshape Solution. }}
+\newcommand{\mysol}{\par{\docfont Solution. }}
 \NewDocumentCommand{\mynote}{ o m }{
 	\IfNoValueTF{#1}{
 		\begin{center}
-			\vline\,\vline \hspace{.01\linewidth}
-			\begin{minipage}{.8\linewidth}
-				\textsc{Note} \\[.25\baselineskip] {\small #2}
-			\end{minipage}
-			\hspace{.01\linewidth} \vline\,\vline
+			\fbox{\parbox{.8\linewidth}{
+				{\docfont Note} \\[.25\baselineskip] {\small #2}
+			}}
 		\end{center}
 	}{
 		\begin{center}
-			\vline\,\vline \hspace{.01\linewidth}
-			\begin{minipage}{.8\linewidth}
-				\textsc{Note} \hfill {\itshape (#1)} \hfill \\[.25\baselineskip] {\small #2}
-			\end{minipage}
-			\hspace{.01\linewidth} \vline\,\vline
+			\fbox{\parbox{.8\linewidth}{
+				{\docfont Note} \hfill {\docfont\itshape (#1)} \hfill \\[.25\baselineskip] {\small #2}
+			}}
 		\end{center}
 	}
 }
-\newcommand{\printhead}{
-	\thispagestyle{pagenumberonly}
+
+\newcommand{\printheadclean}{
+	\thispagestyle{titlepage}
+	\renewcommand{\docfont}{\normalfont}
 	\begin{center}
 		\begin{tikzpicture}[overlay]
 			\foreach \i in {-3, -1, 1, 3} {
-				\draw[line width = 1.5pt] (-.5\linewidth, .165*\i) -- (.5\linewidth, .165*\i);
+				\draw[line width = 1.5pt] (-.5\linewidth, .175*\i) -- (.5\linewidth, .175*\i);
 			}
 			\node[fill = white, text = black, draw = white] at (0, 0) {\huge\bfseries\capitals\thetitle};
 		\end{tikzpicture}
@@ -131,34 +149,92 @@
 	Course: \thecourse \\
 	\rule{\linewidth}{1.5pt}
 }
-\renewcommand{\headrule}{}
+\newcommand{\printheadbox}{
+	\thispagestyle{titlepage}
+	\renewcommand{\docfont}{\ttfamily}
+	\fbox{
+		\parbox{\linewidth}{{
+			\ttfamily
+			\bigskip
+			{\bfseries\thename} (\theroll) \hfill \bfseries\thetitle \hfill \\
+			\normalfont\ttfamily\theprogram \hfill \thecourse \hfill
+			\begin{center}
+				Submitted\ \thedate
+			\end{center}
+		}
+	}}
+}
+\newcommand{\printheadfancy}{
+	\renewcommand{\docfont}{\garamond}
+	\thispagestyle{titlepage}
+	\begin{center} 
+		{\Huge\thefancytitle}
+	\end{center} 
+	\vspace{2\baselineskip}
+	{
+		\garamond\Large
+		{\bfseries\thename} \hfill {\large Submitted \thedate} \hfill \\[3pt]
+		(\theroll) \hfill {\bfseries\thecourse} \\[8pt]
+		{\itshape\theprogram}
+	}
+	\begin{center}
+		{\huge\decoone}
+	\end{center}
+}
+
 
 %%% computer science
 \lstset{
 	language = Python,
 	tabsize = 4,
-	basicstyle = \consolasfont,
+	basicstyle = \ttfamily\small,
 	breaklines = true,
-	frame = leftline,
 	autogobble = true,
 	numbers = left,
 	firstnumber = last,
-	numberstyle = \footnotesize\color{black!70}
+	numberstyle = \tiny\color{black!70},
+	commentstyle = \color{black!70},
+	keywordstyle = ,
+	xrightmargin = .1\linewidth,
+	aboveskip = .5\baselineskip,
+	belowskip = \baselineskip,
+	showstringspaces = false
 }
 \newcommand{\mylanguage}[1]{
 	\lstset{language = #1},
 }
 
+\lstnewenvironment{lstoutput}
+{
+	\texttt{\#\#\# Output:}
+	\lstset{
+		basicstyle = \ttfamily\small,
+		breaklines = true,
+		autogobble = true,
+		tabsize = 4,
+		numbers = none,
+		xleftmargin = .05\linewidth,
+		xrightmargin = .15\linewidth,
+		frame = single
+	}
+}
+{
+}
 
 %%% mathematics generic
 \newcommand{\mytheorem}[1]{
 	\vspace{.5\baselineskip}
-	{\bfseries Theorem.} {\itshape #1} \par
+	{\docfont\bfseries Theorem.} {\itshape #1} \par
+}
+
+\newcommand{\myclaim}[1]{
+	\vspace{.5\baselineskip}
+	{\docfont\bfseries Claim.} {\itshape #1} \par
 }
 
 \newcommand{\myproof}[1]{
 	\vspace{.5\baselineskip}
-	{\itshape Proof.} #1 \hfill $\blacksquare$
+	{\docfont\itshape Proof.} #1 \hfill $\blacksquare$
 }
 
 
@@ -166,8 +242,6 @@
 \let\originalexists\exists
 \renewcommand{\forall}{\ \originalforall\ }
 \renewcommand{\exists}{\ \originalexists\ }
-
-\renewcommand{\paragraph}[1]{\par\medskip\noindent {\itshape #1. \,}}
 
 \newcommand{\inv}{^{-1}}
 \newcommand{\lcm}[1]{\text{lcm}(#1)}
@@ -195,8 +269,8 @@
 
 \ExplSyntaxOn
 \NewDocumentCommand{\seplist}{ O{\ } m} {
-  \seq_set_from_clist:Nn \l_tmpa_seq {#2}
-  \seq_use:Nn \l_tmpa_seq { #1 }
+	\seq_set_from_clist:Nn \l_tmpa_seq {#2}
+	\seq_use:Nn \l_tmpa_seq { #1 }
 }
 \ExplSyntaxOff
 
@@ -218,6 +292,7 @@
 \newcommand{\class}[1]{\left\langle #1 \right\rangle}
 \newcommand{\aut}[1]{\text{Aut}(#1)}
 \newcommand{\inn}[1]{\text{Inn}(#1)}
+\renewcommand{\ker}[1]{\text{Ker}#1}
 
 
 %%% riemann integration
